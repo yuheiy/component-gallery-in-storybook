@@ -1,6 +1,7 @@
 import LinkTo from "@storybook/addon-links/react";
 import { Meta, Unstyled } from "@storybook/blocks";
 import { sortStoriesV7 } from "@storybook/preview-api";
+import Preview from "../../.storybook/preview";
 
 <Meta title="Overview" />
 
@@ -29,7 +30,7 @@ export const structuredStories = (() => {
   }));
   const sortedStoryIndexEntries = sortStoriesV7(
     storyIndexEntries,
-    { method: "alphabetical" },
+    Preview.parameters.options.storySort,
     []
   );
 
