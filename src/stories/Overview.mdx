@@ -1,0 +1,83 @@
+import LinkTo from "@storybook/addon-links/react";
+import { Meta, Unstyled } from "@storybook/blocks";
+import { sortStoriesV7 } from "@storybook/preview-api";
+
+<Meta title="Overview" />
+
+<style>
+  {`
+    .sbdocs-content {
+      max-width: 100rem;
+    }
+  `}
+</style>
+
+# Components Overview
+
+Component names and categories were collected from [React Spectrum](https://react-spectrum.adobe.com/react-spectrum/).
+
+export const structuredStories = (() => {
+  const modules = import.meta.glob("../../src/**/*.stories.@(js|jsx|ts|tsx)", {
+    eager: true,
+  });
+  const storyIndexEntries = Object.entries(modules).map(([id, module]) => ({
+    type: "story",
+    name: "name",
+    ...module.default,
+    id,
+    importPath: id,
+  }));
+  const sortedStoryIndexEntries = sortStoriesV7(
+    storyIndexEntries,
+    { method: "alphabetical" },
+    []
+  );
+
+  const result = new Map();
+  for (const item of sortedStoryIndexEntries) {
+    const keys = item.title.split("/");
+    let currentMap = result;
+    keys.forEach((key, i) => {
+      if (i === keys.length - 1) {
+        currentMap.set(key, modules[item.id].default);
+      } else {
+        if (!currentMap.has(key)) {
+          currentMap.set(key, new Map());
+        }
+        currentMap = currentMap.get(key);
+      }
+    });
+  }
+  return result;
+})();
+
+<div className="!mt-10 space-y-16">
+  {[...structuredStories.entries()].map(([category, components]) => (
+    <div key={category}>
+      <h2>{category}</h2>
+      <Unstyled>
+        <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] gap-x-10 gap-y-8">
+          {[...components.entries()].map(([component, { parameters }]) => (
+            <li key={component}>
+              <LinkTo
+                kind={`${category}/${component}`}
+                story="docs"
+                className="block"
+              >
+                <img
+                  className="block w-full"
+                  src={parameters.gallery.thumbnail}
+                  width="1600"
+                  height="900"
+                  alt=""
+                  decoding="async"
+                />
+                <p className="mt-2">{component}</p>
+              </LinkTo>
+            </li>
+          ))}
+        </ul>
+      </Unstyled>
+    </div>
+  ))}
+</div>
