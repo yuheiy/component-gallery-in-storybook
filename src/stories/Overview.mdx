@@ -35,12 +35,12 @@ export const structuredStories = (() => {
   );
 
   const result = new Map();
-  for (const item of sortedStoryIndexEntries) {
-    const keys = item.title.split("/");
+  for (const storyIndexEntry of sortedStoryIndexEntries) {
+    const keys = storyIndexEntry.title.split("/");
     let currentMap = result;
     keys.forEach((key, i) => {
       if (i === keys.length - 1) {
-        currentMap.set(key, modules[item.id].default);
+        currentMap.set(key, modules[storyIndexEntry.id].default);
       } else {
         if (!currentMap.has(key)) {
           currentMap.set(key, new Map());
